@@ -1,103 +1,119 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [list, setList] = useState<{ name: string; price: number; code?: string }[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  // 商品コード読み込みAPI呼び出し
+  const handleRead = async () => {
+    if (!code) {
+      alert('商品コードを入力してください');
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:8000/product/${code}`);
+      const data = await res.json();
+
+      if (data && data.PRICE !== undefined) {
+        setName(data.NAME);
+        setPrice(data.PRICE);
+      } else {
+        setName('未登録商品');
+        setPrice(0);
+      }
+    } catch (err) {
+      console.error('API呼び出し失敗:', err);
+      setName('エラー');
+      setPrice(0);
+    }
+  };
+
+  // 購入リストに追加
+  const handleAdd = () => {
+    if (!name || price === 0 || name === '未登録商品' || name === 'エラー') {
+      alert('有効な商品を読み込んでから追加してください');
+      return;
+    }
+
+    setList([...list, { name, price, code }]);
+    setCode('');
+    setName('');
+    setPrice(0);
+  };
+
+  // 購入API呼び出し
+  const handlePurchase = async () => {
+    if (list.length === 0) {
+      alert('購入リストが空です');
+      return;
+    }
+
+    const purchaseData = {
+      emp_cd: "9999999999",
+      store_cd: "30",
+      pos_no: "90",
+      items: list.map(item => ({
+        code: item.code || '',
+        name: item.name,
+        price: item.price,
+      })),
+    };
+
+    console.log("送信データ:", purchaseData);
+
+    try {
+      const res = await fetch("http://localhost:8000/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(purchaseData),
+      });
+      const data = await res.json();
+      console.log("購入APIレスポンス:", data);
+
+      if (data.success) {
+        alert(`購入成功！合計金額: ${data.total} 円`);
+        setList([]);
+      } else {
+        alert("購入に失敗しました");
+      }
+    } catch (error) {
+      alert("購入処理でエラーが発生しました");
+      console.error("購入APIエラー:", error);
+    }
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>POSアプリ</h1>
+
+      <input
+        type="text"
+        placeholder="商品コード"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+      />
+      <button onClick={handleRead}>商品コード読み込み</button>
+
+      <div>商品名: {name}</div>
+      <div>単価: {price}円</div>
+
+      <button onClick={handleAdd}>追加</button>
+
+      <h2>購入リスト</h2>
+      <ul>
+        {list.map((item, index) => (
+          <li key={index}>
+            {item.name} - {item.price}円
+          </li>
+        ))}
+      </ul>
+
+      <button onClick={handlePurchase}>購入</button>
     </div>
   );
 }
