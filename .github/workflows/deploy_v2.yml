@@ -1,4 +1,4 @@
-name: Build and deploy Node.js app to Azure Web App - app-step4-58-v2
+name: Build and deploy Node.js app to Azure Web App - app-step4-58
 
 on:
   push:
@@ -26,8 +26,7 @@ jobs:
           npm run build
 
       - name: Upload build artifacts for deployment
-        # コメント追加でGitHub Actionsのキャッシュリセットを促す
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3     # ここはv3推奨。v2はエラーが出るため。
         with:
           name: next-build
           path: |
@@ -45,7 +44,8 @@ jobs:
 
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@latest
+        uses: actions/download-artifact@v3   # 同じくv3を指定
+
         with:
           name: next-build
 
