@@ -26,7 +26,7 @@ jobs:
           npm run build
 
       - name: Upload build artifacts for deployment
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: next-build
           path: |
@@ -44,7 +44,7 @@ jobs:
 
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: next-build
 
