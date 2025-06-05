@@ -1,0 +1,59 @@
+name: Build and deploy Node.js app to Azure Web App - app-step4-58
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload build artifacts for deployment
+        uses: actions/upload-artifact@v3     # ここはv3推奨。v2はエラーが出るため。
+        with:
+          name: next-build
+          path: |
+            .next
+            package.json
+            public
+            next.config.js
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3   # 同じくv3を指定
+
+        with:
+          name: next-build
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'app-step4-58'
+          slot-name: 'Production'
+          package: '.'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_06231B9B0CD3475FAB7136339B0F5EAB }}
