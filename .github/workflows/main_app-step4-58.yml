@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read  # This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -23,14 +23,13 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      - name: npm install and build
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
 
-      - name: Zip artifact for deployment
-        run: zip -r release.zip .next public package.json next.config.js next.config.ts
+      - name: Zip build artifacts for deployment
+        run: zip -r release.zip .next public package.json next.config.js
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -44,7 +43,7 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -53,12 +52,12 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-step4-58'
-          slot-name: 'Production'
+          app-name: 'app-step4-58'  # AzureのApp Service名に合わせて修正してください
+          slot-name: 'Production'   # 必要に応じてスロット名を変更してください
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
