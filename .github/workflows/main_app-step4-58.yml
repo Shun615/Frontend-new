@@ -28,6 +28,9 @@ jobs:
           npm install
           npm run build --if-present
 
+      - name: List .next directory contents to verify build
+        run: ls -la .next
+
       - name: Zip build artifacts for deployment
         run: zip -r release.zip .next public package.json next.config.js
 
