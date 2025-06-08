@@ -34,6 +34,9 @@ jobs:
       - name: Zip build artifacts for deployment
         run: zip -r release.zip .next public package.json next.config.js
 
+      - name: Check contents of release.zip
+        run: unzip -l release.zip
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
