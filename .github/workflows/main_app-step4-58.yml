@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - app-step4-58
 
 on:
@@ -28,8 +25,12 @@ jobs:
           npm install
           npm run build --if-present
 
-      - name: List .next directory contents to verify build
-        run: ls -la .next
+      - name: Show current directory and files after build
+        run: |
+          pwd
+          ls -la
+          ls -la .next
+          find . -name "*.js"
 
       # next.config.js が存在するか確認し、その結果によってZIPに含めるファイルを分ける
       - name: Check if next.config.js exists
