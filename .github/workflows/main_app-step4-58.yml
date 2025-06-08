@@ -31,8 +31,25 @@ jobs:
       - name: List .next directory contents to verify build
         run: ls -la .next
 
+      # next.config.js が存在するか確認し、その結果によってZIPに含めるファイルを分ける
+      - name: Check if next.config.js exists
+        id: check_next_config
+        run: |
+          if [ -f next.config.js ]; then
+            echo "next_config_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "next_config_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Zip build artifacts for deployment
-        run: zip -r release.zip .next public package.json next.config.js
+        run: |
+          if [ "${{ steps.check_next_config.outputs.next_config_exists }}" = "true" ]; then
+            echo "Including next.config.js in zip"
+            zip -r release.zip .next public package.json next.config.js
+          else
+            echo "Excluding next.config.js from zip"
+            zip -r release.zip .next public package.json
+          fi
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
