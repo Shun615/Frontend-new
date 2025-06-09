@@ -34,7 +34,6 @@ jobs:
           ls -la .next
           find . -name "*.js"
 
-      # next.config.ts が存在するか確認し、その結果によってZIPに含めるファイルを分ける
       - name: Check if next.config.ts exists
         id: check_next_config
         run: |
@@ -85,5 +84,5 @@ jobs:
         with:
           app-name: 'app-step4-58'  # AzureのApp Service名に合わせて修正してください
           slot-name: 'Production'   # 必要に応じてスロット名を変更してください
-          package: .
+          package: '.next/standalone'  # 展開済みフォルダを指定
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
