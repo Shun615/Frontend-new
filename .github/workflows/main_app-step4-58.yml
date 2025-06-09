@@ -21,6 +21,8 @@ jobs:
           node-version: '20.x'
 
       - name: npm install and build
+        env:
+          NEXT_PUBLIC_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
         run: |
           npm install
           npm run build --if-present
@@ -32,11 +34,11 @@ jobs:
           ls -la .next
           find . -name "*.js"
 
-      # next.config.js が存在するか確認し、その結果によってZIPに含めるファイルを分ける
-      - name: Check if next.config.js exists
+      # next.config.ts が存在するか確認し、その結果によってZIPに含めるファイルを分ける
+      - name: Check if next.config.ts exists
         id: check_next_config
         run: |
-          if [ -f next.config.js ]; then
+          if [ -f next.config.ts ]; then
             echo "next_config_exists=true" >> $GITHUB_OUTPUT
           else
             echo "next_config_exists=false" >> $GITHUB_OUTPUT
@@ -45,10 +47,10 @@ jobs:
       - name: Zip build artifacts for deployment
         run: |
           if [ "${{ steps.check_next_config.outputs.next_config_exists }}" = "true" ]; then
-            echo "Including next.config.js in zip"
-            zip -r release.zip .next public package.json next.config.js
+            echo "Including next.config.ts in zip"
+            zip -r release.zip .next public package.json next.config.ts
           else
-            echo "Excluding next.config.js from zip"
+            echo "Excluding next.config.ts from zip"
             zip -r release.zip .next public package.json
           fi
 
