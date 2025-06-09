@@ -25,14 +25,7 @@ jobs:
           NEXT_PUBLIC_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
         run: |
           npm install
-          npm run build --if-present
-
-      - name: Show current directory and files after build
-        run: |
-          pwd
-          ls -la
-          ls -la .next
-          find . -name "*.js"
+          npm run build
 
       - name: Check if next.config.ts exists
         id: check_next_config
@@ -67,7 +60,6 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
@@ -82,7 +74,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-step4-58'  # AzureのApp Service名に合わせてください
+          app-name: 'app-step4-58'  # Azure App Service 名に合わせて変更
           slot-name: 'Production'
-          package: '.next/standalone'  # 展開済みフォルダを指定
+          package: '.'  # ← ZIPを展開したカレントディレクトリ
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
