@@ -48,10 +48,10 @@ jobs:
         run: |
           if [ "${{ steps.check_next_config.outputs.next_config_exists }}" = "true" ]; then
             echo "Including next.config.ts in zip"
-            zip -r release.zip .next public package.json next.config.ts
+            zip -r release.zip .next/standalone .next/static public package.json next.config.ts
           else
             echo "Excluding next.config.ts from zip"
-            zip -r release.zip .next public package.json
+            zip -r release.zip .next/standalone .next/static public package.json
           fi
 
       - name: Check contents of release.zip
