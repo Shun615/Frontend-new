@@ -27,24 +27,18 @@ jobs:
           npm install
           npm run build
 
-      - name: Check if next.config.ts exists
-        id: check_next_config
+      - name: Prepare release folder and zip
         run: |
+          mkdir -p release
+          cp -r .next/standalone/* release/
+          cp -r .next/static release/
+          cp -r public release/
+          cp package.json release/
           if [ -f next.config.ts ]; then
-            echo "next_config_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "next_config_exists=false" >> $GITHUB_OUTPUT
+            cp next.config.ts release/
           fi
-
-      - name: Zip build artifacts for deployment
-        run: |
-          if [ "${{ steps.check_next_config.outputs.next_config_exists }}" = "true" ]; then
-            echo "Including next.config.ts in zip"
-            zip -r release.zip .next/standalone .next/static public package.json next.config.ts
-          else
-            echo "Excluding next.config.ts from zip"
-            zip -r release.zip .next/standalone .next/static public package.json
-          fi
+          cd release
+          zip -r ../release.zip .
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
@@ -76,5 +70,5 @@ jobs:
         with:
           app-name: 'app-step4-58'  # Azure App Service 名に合わせて変更
           slot-name: 'Production'
-          package: '.'  # ← ZIPを展開したカレントディレクトリ
+          package: '.'  # ZIPを展開したディレクトリからデプロイ
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
