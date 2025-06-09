@@ -29,9 +29,9 @@ jobs:
 
       - name: Prepare release folder and zip
         run: |
-          mkdir -p release
+          mkdir -p release/_next
           cp -r .next/standalone/* release/
-          cp -r .next/static release/
+          cp -r .next/static release/_next/  # ← static を _next/static に配置
           cp -r public release/
           cp package.json release/
           if [ -f next.config.ts ]; then
