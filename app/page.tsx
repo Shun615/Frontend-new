@@ -8,6 +8,8 @@ export default function Home() {
   const [price, setPrice] = useState(0);
   const [list, setList] = useState<{ name: string; price: number; code?: string }[]>([]);
 
+  const API_BASE = process.env.NEXT_PUBLIC_API_ENDPOINT;
+
   // 商品コード読み込みAPI呼び出し
   const handleRead = async () => {
     if (!code) {
@@ -16,7 +18,7 @@ export default function Home() {
     }
 
     try {
-      const res = await fetch(`http://localhost:8000/product/${code}`);
+      const res = await fetch(`${API_BASE}/product/${code}`);
       const data = await res.json();
 
       if (data && data.PRICE !== undefined) {
@@ -67,7 +69,7 @@ export default function Home() {
     console.log("送信データ:", purchaseData);
 
     try {
-      const res = await fetch("http://localhost:8000/purchase", {
+      const res = await fetch(`${API_BASE}/purchase`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(purchaseData),
