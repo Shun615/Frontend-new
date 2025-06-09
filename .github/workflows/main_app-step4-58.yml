@@ -82,7 +82,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-step4-58'  # AzureのApp Service名に合わせて修正してください
-          slot-name: 'Production'   # 必要に応じてスロット名を変更してください
+          app-name: 'app-step4-58'  # AzureのApp Service名に合わせてください
+          slot-name: 'Production'
           package: '.next/standalone'  # 展開済みフォルダを指定
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
