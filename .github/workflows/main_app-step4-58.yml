@@ -27,18 +27,20 @@ jobs:
           npm install
           npm run build
 
-      - name: Prepare release folder and zip
+      - name: Prepare release zip with correct structure
         run: |
-          mkdir -p release/_next
-          cp -r .next/standalone/* release/
-          cp -r .next/static release/_next/
-          cp -r public release/
-          cp package.json release/
-          if [ -f next.config.ts ]; then
-            cp next.config.ts release/
+          mkdir -p _next
+          cp -r .next/standalone/* ./
+          cp -r .next/static ./_next/
+          cp -r public ./
+          cp package.json ./
+          if [ -f server.js ]; then
+            cp server.js ./
           fi
-          cd release
-          zip -r ../release.zip .  # ← ディレクトリ名ごとでなく「中身だけ」zipに含める！
+          if [ -f next.config.ts ]; then
+            cp next.config.ts ./
+          fi
+          zip -r release.zip ./*
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
@@ -70,5 +72,5 @@ jobs:
         with:
           app-name: 'app-step4-58'
           slot-name: 'Production'
-          package: '.'  # 正しく解凍された状態をデプロイ対象に指定
+          package: '.'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
