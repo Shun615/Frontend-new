@@ -32,7 +32,7 @@ jobs:
           mkdir -p _next
           cp -r .next/standalone/* ./
           cp -r .next/static ./_next/
-          cp -r public ./
+          if [ -d public ]; then cp -r public ./; fi
           cp package.json ./
           if [ -f next.config.ts ]; then
             cp next.config.ts ./
