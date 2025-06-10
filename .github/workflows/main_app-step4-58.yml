@@ -38,7 +38,7 @@ jobs:
             cp next.config.ts release/
           fi
           cd release
-          zip -r ../release.zip .
+          zip -r ../release.zip .  # ← ディレクトリ名ごとでなく「中身だけ」zipに含める！
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
@@ -70,5 +70,5 @@ jobs:
         with:
           app-name: 'app-step4-58'
           slot-name: 'Production'
-          package: '.'
+          package: '.'  # 正しく解凍された状態をデプロイ対象に指定
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
