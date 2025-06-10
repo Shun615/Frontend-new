@@ -32,7 +32,7 @@ jobs:
           mkdir -p _next
           cp -r .next/standalone/* ./
           cp -r .next/static ./_next/
-          cp -r public ./
+          # public フォルダのコピーをスキップ（Azure側に既に存在する or 不要なため）
           cp package.json ./
           if [ -f server.js ]; then
             cp server.js ./
