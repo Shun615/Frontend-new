@@ -29,18 +29,18 @@ jobs:
 
       - name: Prepare release zip with correct structure
         run: |
-          mkdir -p _next
-          cp -r .next/standalone/* ./
-          cp -r .next/static ./_next/
-          # public フォルダのコピーをスキップ（Azure側に既に存在する or 不要なため）
-          cp package.json ./
+          mkdir -p release/_next
+          cp -r .next/standalone/* release/
+          cp -r .next/static release/_next/
+          cp package.json release/
           if [ -f server.js ]; then
-            cp server.js ./
+            cp server.js release/
           fi
           if [ -f next.config.ts ]; then
-            cp next.config.ts ./
+            cp next.config.ts release/
           fi
-          zip -r release.zip ./*
+          cd release
+          zip -r ../release.zip .  # ← 中身のみ zip にする
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
