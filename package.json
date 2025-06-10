@@ -5,13 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node server.js",  // ← 修正済み ✅
     "lint": "next lint"
   },
   "dependencies": {
+    "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.3"
+    "express": "^4.18.2"  // ← 追加: server.js で必要 ✅
   },
   "devDependencies": {
     "typescript": "^5",
