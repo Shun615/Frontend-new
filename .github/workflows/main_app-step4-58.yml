@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -27,17 +27,18 @@ jobs:
           npm install
           npm run build
 
-      - name: Prepare release zip with correct _next/static path
+      - name: Prepare release folder and zip
         run: |
-          mkdir -p _next
-          cp -r .next/standalone/* ./
-          cp -r .next/static ./_next/
-          if [ -d public ]; then cp -r public ./; fi
-          cp package.json ./
+          mkdir -p release/_next
+          cp -r .next/standalone/* release/
+          cp -r .next/static release/_next/
+          cp -r public release/
+          cp package.json release/
           if [ -f next.config.ts ]; then
-            cp next.config.ts ./
+            cp next.config.ts release/
           fi
-          zip -r release.zip ./*
+          cd release
+          zip -r ../release.zip .
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
@@ -67,7 +68,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-step4-58'  # Azure App Service 名に合わせて変更
+          app-name: 'app-step4-58'
           slot-name: 'Production'
-          package: '.'  # ZIPを展開したディレクトリからデプロイ
+          package: '.'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6641BB71A5E455B91FE964937BDF752 }}
