@@ -27,18 +27,17 @@ jobs:
           npm install
           npm run build
 
-      - name: Prepare release folder and zip
+      - name: Prepare release zip with correct _next/static path
         run: |
-          mkdir -p release/_next
-          cp -r .next/standalone/* release/
-          cp -r .next/static release/_next/  # ← static を _next/static に配置
-          cp -r public release/
-          cp package.json release/
+          mkdir -p _next
+          cp -r .next/standalone/* ./
+          cp -r .next/static ./_next/
+          cp -r public ./
+          cp package.json ./
           if [ -f next.config.ts ]; then
-            cp next.config.ts release/
+            cp next.config.ts ./
           fi
-          cd release
-          zip -r ../release.zip .
+          zip -r release.zip ./*
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
