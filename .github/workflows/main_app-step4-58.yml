@@ -32,6 +32,7 @@ jobs:
           mkdir -p release/_next
           cp -r .next/standalone/* release/
           cp -r .next/static release/_next/
+          cp -r node_modules release/              # ← 必須！依存モジュールを含める
           cp package.json release/
           if [ -f server.js ]; then
             cp server.js release/
@@ -40,7 +41,7 @@ jobs:
             cp next.config.ts release/
           fi
           cd release
-          zip -r ../release.zip .  # ← 中身のみ zip にする
+          zip -r ../release.zip .                  # ← 中身だけをZIPに
 
       - name: Check contents of release.zip
         run: unzip -l release.zip
