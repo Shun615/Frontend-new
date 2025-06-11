@@ -9,6 +9,7 @@ export default function Home() {
   const [list, setList] = useState<{ name: string; price: number; code?: string }[]>([]);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  console.log("API_BASE:", API_BASE); // ← ✅ ここを追加（12行目）
 
   // 商品コード読み込みAPI呼び出し
   const handleRead = async () => {
