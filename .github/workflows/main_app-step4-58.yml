@@ -20,33 +20,28 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install and build
+      - name: Install dependencies and build
         env:
           NEXT_PUBLIC_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
         run: |
           npm install
           npm run build
 
-      - name: Prepare release zip with correct structure
+      - name: Prepare release zip with minimum structure
         run: |
           mkdir -p release/_next
           cp -r .next/standalone/* release/
           cp -r .next/static release/_next/
-          cp -r node_modules release/              # ← 必須！依存モジュールを含める
           cp package.json release/
-          if [ -f server.js ]; then
-            cp server.js release/
-          fi
-          if [ -f next.config.ts ]; then
-            cp next.config.ts release/
-          fi
+          cp package-lock.json release/
+          [ -f server.js ] && cp server.js release/
           cd release
-          zip -r ../release.zip .                  # ← 中身だけをZIPに
+          zip -r ../release.zip .
 
-      - name: Check contents of release.zip
+      - name: Show contents of release.zip
         run: unzip -l release.zip
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deploy step
         uses: actions/upload-artifact@v4
         with:
           name: node-app
@@ -59,12 +54,12 @@ jobs:
       name: 'Production'
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
 
-      - name: Unzip artifact for deployment
+      - name: Unzip artifact
         run: unzip release.zip
 
       - name: Deploy to Azure Web App
