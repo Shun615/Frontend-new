@@ -35,6 +35,7 @@ jobs:
           cp package.json release/
           cp package-lock.json release/
           [ -f server.js ] && cp server.js release/
+          [ -f .next/trace ] && cp .next/trace release/        # ← 追加
           cd release
           zip -r ../release.zip .
 
