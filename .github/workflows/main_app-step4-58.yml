@@ -27,15 +27,17 @@ jobs:
           npm install
           npm run build
 
-      - name: Prepare release zip with minimum structure
+      - name: Prepare release zip with all necessary files
         run: |
           mkdir -p release/_next
           cp -r .next/standalone/* release/
           cp -r .next/static release/_next/
+          cp -r public release/
+          cp -r node_modules release/                         # ✅ node_modules を含める
           cp package.json release/
           cp package-lock.json release/
           [ -f server.js ] && cp server.js release/
-          [ -f .next/trace ] && cp .next/trace release/        # ← 追加
+          [ -f .next/trace ] && cp .next/trace release/
           cd release
           zip -r ../release.zip .
 
